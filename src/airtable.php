@@ -65,7 +65,6 @@ class Airtable {
 
                 if(!empty($data["fields"])) {
                     $request .= "?".http_build_query($data);
-                    echo "hey";
                     $data = json_encode($data);
                 } else $data = '{"fields":{}}';
 
@@ -92,8 +91,6 @@ class Airtable {
                 $request .= "/".$id;
                 break;
         }
-
-        echo $this->getApiUrl($request);
 
         $headers = array( //curl Headers
             'Content-Type: application/json',
