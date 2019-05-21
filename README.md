@@ -21,7 +21,7 @@ Two tokens are required to use this wrapper: an api token, and a base id. Follow
 >3. Scroll down to "<> API".
 >4. Copy the personal API Key.
 >
-><kbd><img src="documentation/Image3.jpg" height="100px"></img></kbd>
+><kbd><img src="documentation/Image3.jpg" height="200px"></img></kbd>
 >
 >5. Navigate to the base you want to access with this wrapper.
 >6. Click on the Help icon.
@@ -86,10 +86,10 @@ your_base_id
 
 ### listRecords
 
-Returns a list of records from a given table. following parameters:
+Returns a list of records from a given table.
 
 ```
-$table: String. Required.
+$table_name: String. Required.
 $params: Array. All parameters are optional.
 
 For more details on accepted parameters, see the airtable documentation.
@@ -99,7 +99,7 @@ A special parameter not included on the Airtable API has been added called check
 
 ##### Code Template:
 ```php
-$airtable->listRecords($table, array(
+$airtable->listRecords($table_name, array(
     "fields" => array(strings),
     "filterByFormula" => string,
     "maxRecords" => number,
@@ -136,31 +136,74 @@ Because checkOffset was not set to false, all pages possible were returned.
 
 ### retrieveRecord
 
-##### Code:
-```php
+Retrieves a specific record from a given table. Empty fields from record are not returned.
 
+```
+$table_name: String. Required.
+$record_id: String. Required.
+```
+
+##### Code Template:
+```php
+$airtable->retrieveRecord($table_name, $record_id);
+```
+
+##### Code Example:
+```php
+print_r($airtable->retrieveRecord("Users", "recfauP0XQTTgXMQK"));
 ```
 
 ##### Result:
 ```php
-
+Array with all the information from one record that is not empty.
 ```
 
 ### createRecord
 
-##### Code:
-```php
+Create a record in a specific table. 
 
+```
+$table_name: String. Required.
+$data: Array. Optional (though recommended).
+```
+
+##### Code Template:
+```php
+$airtable->createRecord($table_name, array(
+    "field_name1" => "field_value1",
+    "field_name2" => "field_value2"...
+));
+```
+
+##### Code Example:
+```php
+print_r($airtable->createRecord("Users", array(
+    "First Name" => "Joe",
+    "Last Name" => "Smith"
+)));
 ```
 
 ##### Result:
 ```php
-
+On success, the created record is returned with the field information and id of the record.
 ```
 
 ### updateRecord
 
-##### Code:
+Update a specific record
+
+```
+$table_name: String. Required.
+$record_id: String. Required.
+$data: Array. Optional.
+```
+
+##### Code Template:
+```php
+$airtable->retrieveRecord($table_name, $record_id);
+```
+
+##### Code Example:
 ```php
 
 ```
@@ -172,7 +215,19 @@ Because checkOffset was not set to false, all pages possible were returned.
 
 ### deleteRecord
 
-##### Code:
+Retrieves a specific record from a given table. Empty fields from record are not returned. following parameters:
+
+```
+$table_name: String. Required.
+$record_id: String. Required.
+```
+
+##### Code Template:
+```php
+$airtable->retrieveRecord($table_name, $record_id);
+```
+
+##### Code Example:
 ```php
 
 ```
