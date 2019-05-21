@@ -54,9 +54,7 @@ class Airtable {
 
         switch($type) {
             case "list": //listRecords
-                if(!empty($params)) { //If parameters are set, add them
-                    $request .= "?".http_build_query($params);
-                }
+                if(!empty($params)) $request .= "?".http_build_query($params);
                 break;
             case "retrieve": //retreiveRecords
                 $request .= "/".$id;
@@ -64,17 +62,29 @@ class Airtable {
             case "create": //createRecord
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
                 curl_setopt($curl, CURLOPT_POST, count($data));
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 
-                $request .= "?".http_build_query($data);
+                if(!empty($data["fields"])) {
+                    $request .= "?".http_build_query($data);
+                    echo "hey";
+                    $data = json_encode($data);
+                } else $data = '{"fields":{}}';
+
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
                 break;
             case "update": //updateRecord
                 if($destructive) curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT'); //destructive
                 else curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH'); //nondestructive
                 curl_setopt($curl,CURLOPT_POST, count($data));
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 
-                $request .= "/".$id."?".http_build_query($data);
+                $request .= "/".$id;
+                if(!empty($data["fields"])) {
+                    $request .= "?".http_build_query($data);
+                    $data = json_encode($data);
+                } else $data = '{"fields":{}}';
+
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
                 break;
             case "delete": //deleteRecord
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -82,6 +92,8 @@ class Airtable {
                 $request .= "/".$id;
                 break;
         }
+
+        echo $this->getApiUrl($request);
 
         $headers = array( //curl Headers
             'Content-Type: application/json',
@@ -148,8 +160,8 @@ class Airtable {
         return $results;
     }
 
-    public function createRecord($table, $data) {
-        $data = array("fields" => $data);
+    public function createRecord($table, $data=[]) {
+        $data = array('fields' => $data);
 
         $curl = $this->getCurl($table, "create", [], 0, $data); //begin Curl Request
         $results = json_decode(curl_exec($curl), true); //execute Curl Request
@@ -160,7 +172,7 @@ class Airtable {
         return $results;
     }
 
-    public function updateRecord($table, $id, $data, $destructive=false) {
+    public function updateRecord($table, $id, $data=[], $destructive=false) {
         $data = array("fields" => $data);
 
         $curl = $this->getCurl($table, "update", [], $id, $data, $destructive); //begin Curl Request
