@@ -4,6 +4,7 @@ PHP Airtable Wrapper for the Airtable API
 ## Getting Started
 
 Follow these steps to successfully implement this PHP Airtable Wrapper.
+
 *NOTE: The Airtable API allows one to implement basic CRUD functions on records, but does not allow you to make changes to the schema of the tables. Use their interface to make changes to the schema*
 
 ### Getting your API Key and Base ID
@@ -59,23 +60,136 @@ Use the following code snippet with your API Key and Base ID to begin using the 
 use \pcbowers\Airtable\airtable;
 $airtable = new Airtable(array(
     'api_key' => 'api_key',
-    'base'    => 'base_id'
+    'base_id' => 'base_id'
 ));
 ```
 
 ## Examples
 
+A number of examples are placed below to help use this wrapper. The examples assume that the class has already been initiated
+
 ### getApiKey & getBaseId
+
+Returns the API Key and Base ID respectively for a specific instance.
+
+##### Code Example:
+```php
+echo $airtable->getApiKey() . "<br />";
+echo $airtable->getBaseId();
+```
+
+##### Result:
+```
+your_api_key
+your_base_id
+```
 
 ### listRecords
 
+Returns a list of records from a given table. following parameters:
+
+```
+$table: String. Required.
+$params: Array. All parameters are optional.
+
+For more details on accepted parameters, see the airtable documentation.
+```
+
+A special parameter not included on the Airtable API has been added called checkOffset. This paramater defaults to true but can be set to false. It allows you to return just 1 page of results instead of all of them if you have more than 5 pages of results being returned.
+
+##### Code Template:
+```php
+$airtable->listRecords($table, array(
+    "fields" => array(strings),
+    "filterByFormula" => string,
+    "maxRecords" => number,
+    "pageSize" => number,
+    "sort" => array(objects),
+    "view" => string,
+    "cellFormat" => string,
+    "timeZone" => string,
+    "userLocale" => string,
+    "checkOffset" => true
+));
+```
+
+
+##### Code Example:
+```php
+print_r($airtable->listRecords("Users", array(
+    "fields" => array("First Name", "Last Name"),
+    "sort" => array(array("field" => "First Name", "direction" => "asc")),
+    "maxRecords" => 100
+)));
+```
+
+##### Result:
+```
+Array of records. Contains:
+    - up to 100 records
+    - 'First Name' and 'Last Name' field
+    - id of each record along with the created time
+    - sorted by 'First Name ascending'
+
+Because checkOffset was not set to false, all pages possible were returned.
+```
+
 ### retrieveRecord
+
+##### Code:
+```php
+
+```
+
+##### Result:
+```php
+
+```
 
 ### createRecord
 
+##### Code:
+```php
+
+```
+
+##### Result:
+```php
+
+```
+
 ### updateRecord
+
+##### Code:
+```php
+
+```
+
+##### Result:
+```php
+
+```
 
 ### deleteRecord
 
+##### Code:
+```php
+
+```
+
+##### Result:
+```php
+
+```
 
 ### getLastLog & getLog
+
+##### Code:
+```php
+
+```
+
+##### Result:
+```php
+
+```
