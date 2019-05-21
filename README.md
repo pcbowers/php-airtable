@@ -59,7 +59,7 @@ Use the following code snippet with your API Key and Base ID to begin using the 
 use \pcbowers\Airtable\airtable;
 $airtable = new Airtable(array(
     'api_key' => 'api_key',
-    'base'    => 'base_id'
+    'base_id' => 'base_id'
 ));
 ```
 
