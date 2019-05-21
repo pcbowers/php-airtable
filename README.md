@@ -86,7 +86,7 @@ your_base_id
 
 ### listRecords
 
-Returns a list of records from a given table.
+Returns a list of records from a given table. Empty fields from records are not returned.
 
 ```
 $table_name: String. Required.
@@ -95,7 +95,9 @@ $params: Array. All parameters are optional.
 For more details on accepted parameters, see the airtable documentation.
 ```
 
-A special parameter not included on the Airtable API has been added called checkOffset. This paramater defaults to true but can be set to false. It allows you to return just 1 page of results instead of looping through all of them. (Depending on your rate limits, any more than 500 records in 1 search may return false if those rate limits are reached).
+A special parameter not included on the Airtable API has been added called ```checkOffset```. This paramater defaults to true but can be set to false. It allows you to return just 1 page of results instead of looping through all of them.
+
+>This has been tested on an airtable base with a table containing 50,000 records and 31 columns of data. Due to varying internet connections and usages of the data, speeds cannot be estimated. However, the broader the search, the slower this will run. Therefore, in some use cases, it may be important to set checkOffset to false to increase load times even though you will only get a portion of the data. Alternatively, you can set the ```maxRecords``` lower. Ideally, you want to keep your requests at a maximum of 1 page which can be calculated by ```maxRecords / pageSize```. It is recommended that this number stay at 5 or less for optimal load speeds.
 
 ##### Code Template:
 ```php
