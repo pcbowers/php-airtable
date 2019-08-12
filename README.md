@@ -1,6 +1,12 @@
 # PHP Airtable Wrapper
 PHP Airtable Wrapper for the Airtable API
 
+## Recent Updates
+
+**NEW** You can now do updates that allow elements to be removed if necessary. See [updateRecords](#updaterecord) for more details.
+
+**NEW** Typecast is now an option by default. New select options will be automatically created rather than throwing errors.
+
 ## Getting Started
 
 Follow these steps to successfully implement this PHP Airtable Wrapper.
@@ -201,6 +207,14 @@ $data: Array. Optional (though recommended).
 $destructive: Boolean. Optional. Default false.
 A value of false runs a PATCH update leaving data untouched if not edited.
 A value of true runs a PUT update which destroys the instance and updates it with only the new data added.
+
+**NEW** A value of "false" (not a boolean, but string "false") mixes the 2:
+- A "false" value runs a PUT update which destroys the instance.
+- However, unlike a normal PUT update, the new data is mixed with the old data.
+- Fields left unmentioned will still remain in the record.
+- Fields mentioned will be updated in the record.
+- Fields mentioned and left as a blank string or array will be removed from the record.
+- Fields that are not allowed to be edited must be included as empty values in $data (i.e. Formula Fields)
 ```
 
 ##### Code Template:

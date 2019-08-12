@@ -51,6 +51,7 @@ class Airtable {
     private function getCurl($table, $type, $params, $id=0, $data=[], $destructive=false) {
         $curl = curl_init(); //begin the curl session
         $request = $table; //add the table to the request url
+        $data["typecast"] = true; //allow typecasting
 
         switch($type) {
             case "list": //listRecords
@@ -72,8 +73,8 @@ class Airtable {
 
                 break;
             case "update": //updateRecord
-                if($destructive) curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT'); //destructive
-                else curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH'); //nondestructive
+                if(!$destructive) curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+                else curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT'); //always does destructive
                 curl_setopt($curl,CURLOPT_POST, count($data));
 
                 $request .= "/".$id;
@@ -153,7 +154,6 @@ class Airtable {
         curl_close($curl); //end Curl Request
 
         if($this->checkError($results, "retrieveRecord", "SUCCESS", "Record retrieved succesfully")) return false;
-
         return $results;
     }
 
@@ -172,7 +172,22 @@ class Airtable {
     public function updateRecord($table, $id, $data=[], $destructive=false) {
         $data = array("fields" => $data);
 
-        $curl = $this->getCurl($table, "update", [], $id, $data, $destructive); //begin Curl Request
+        $current_data = array('fields' => $data["fields"]);
+        if($destructive === "false") { //special patch that allows removal of fields if left empty
+            $current_data = $this->retrieveRecord($table, $id);
+            if($current_data && !empty($current_data)) { //merges data if available
+                foreach($data["fields"] as $key => $value) {
+                    if(isset($current_data["fields"][$key])) {
+                        if(empty($value)) unset($current_data["fields"][$key]);
+                        else $current_data["fields"][$key] = $data["fields"][$key];
+                    }
+                }
+                $destructive = true; //allows removal of fields
+                $current_data = array('fields' => $current_data["fields"]);
+            }
+        }
+
+        $curl = $this->getCurl($table, "update", [], $id, $current_data, $destructive); //begin Curl Request
         $results = json_decode(curl_exec($curl), true); //execute Curl Request
         curl_close($curl); //end Curl Request
 
